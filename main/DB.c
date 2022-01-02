@@ -36,18 +36,16 @@
 #define kIID_PairingPairingFeatures ((uint64_t) 0x0024)
 #define kIID_PairingPairingPairings ((uint64_t) 0x0025)
 
-#define kIID_TemperatureSensor         ((uint64_t) 0x0030)
-// #define kIID_LightBulb                 ((uint64_t) 0x0030)
-#define kIID_LightBulbServiceSignature ((uint64_t) 0x0031)
-#define kIID_LightBulbName             ((uint64_t) 0x0032)
-// #define kIID_LightBulbOn               ((uint64_t) 0x0033)
-#define kIID_Temperature               ((uint64_t) 0x0033)
-#define kIID_HumiditySensor            ((uint64_t) 0x0034)
-#define kIID_Humidity                  ((uint64_t) 0x0035)
-#define kIID_AirQualitySensor          ((uint64_t) 0x0036)
-#define kIID_AirQuality                ((uint64_t) 0x0037)
+#define kIID_TemperatureSensor              ((uint64_t) 0x0030)
+#define kIID_WeatherStationServiceSignature ((uint64_t) 0x0031)
+#define kIID_WeatherStationName             ((uint64_t) 0x0032)
+#define kIID_Temperature                    ((uint64_t) 0x0033)
+#define kIID_HumiditySensor                 ((uint64_t) 0x0034)
+#define kIID_Humidity                       ((uint64_t) 0x0035)
+#define kIID_AirQualitySensor               ((uint64_t) 0x0036)
+#define kIID_AirQuality                     ((uint64_t) 0x0037)
 
-HAP_STATIC_ASSERT(kAttributeCount == 9 + 3 + 5 + 4, AttributeCount_mismatch);
+HAP_STATIC_ASSERT(kAttributeCount == 9 + 3 + 5 + 8, AttributeCount_mismatch);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -398,11 +396,11 @@ const HAPService pairingService = {
 //----------------------------------------------------------------------------------------------------------------------
 
 /**
- * The 'Service Signature' characteristic of the Light Bulb service.
+ * The 'Service Signature' characteristic of the WeatherStation service.
  */
-static const HAPDataCharacteristic lightBulbServiceSignatureCharacteristic = {
+static const HAPDataCharacteristic WeatherStationServiceSignatureCharacteristic = {
     .format = kHAPCharacteristicFormat_Data,
-    .iid = kIID_LightBulbServiceSignature,
+    .iid = kIID_WeatherStationServiceSignature,
     .characteristicType = &kHAPCharacteristicType_ServiceSignature,
     .debugDescription = kHAPCharacteristicDebugDescription_ServiceSignature,
     .manufacturerDescription = NULL,
@@ -422,11 +420,11 @@ static const HAPDataCharacteristic lightBulbServiceSignatureCharacteristic = {
 };
 
 /**
- * The 'Name' characteristic of the Light Bulb service.
+ * The 'Name' characteristic of the WeatherStation service.
  */
-static const HAPStringCharacteristic lightBulbNameCharacteristic = {
+static const HAPStringCharacteristic WeatherStationNameCharacteristic = {
     .format = kHAPCharacteristicFormat_String,
-    .iid = kIID_LightBulbName,
+    .iid = kIID_WeatherStationName,
     .characteristicType = &kHAPCharacteristicType_Name,
     .debugDescription = kHAPCharacteristicDebugDescription_Name,
     .manufacturerDescription = NULL,
@@ -446,27 +444,8 @@ static const HAPStringCharacteristic lightBulbNameCharacteristic = {
 };
 
 /**
- * The 'On' characteristic of the Light Bulb service.
+ * The 'Temperature' characteristic of the WeatherStation service.
  */
-// const HAPBoolCharacteristic lightBulbOnCharacteristic = {
-//     .format = kHAPCharacteristicFormat_Bool,
-//     .iid = kIID_LightBulbOn,
-//     .characteristicType = &kHAPCharacteristicType_On,
-//     .debugDescription = kHAPCharacteristicDebugDescription_On,
-//     .manufacturerDescription = NULL,
-//     .properties = { .readable = true,
-//                     .writable = true,
-//                     .supportsEventNotification = true,
-//                     .hidden = false,
-//                     .requiresTimedWrite = false,
-//                     .supportsAuthorizationData = false,
-//                     .ip = { .controlPoint = false, .supportsWriteResponse = false },
-//                     .ble = { .supportsBroadcastNotification = true,
-//                              .supportsDisconnectedNotification = true,
-//                              .readableWithoutSecurity = false,
-//                              .writableWithoutSecurity = false } },
-//     .callbacks = { .handleRead = HandleLightBulbOnRead, .handleWrite = HandleLightBulbOnWrite }
-// };
 const HAPFloatCharacteristic TemperatureCharacteristic = {
     .format = kHAPCharacteristicFormat_Float,
     .iid = kIID_Temperature,
@@ -489,6 +468,9 @@ const HAPFloatCharacteristic TemperatureCharacteristic = {
     .callbacks = { .handleRead = HandleTemperatureRead, .handleWrite = NULL }
 };
 
+/**
+ * The 'Temperature' characteristic of the WeatherStation service.
+ */
 const HAPFloatCharacteristic HumidityCharacteristic = {
     .format = kHAPCharacteristicFormat_Float,
     .iid = kIID_Humidity,
@@ -511,6 +493,9 @@ const HAPFloatCharacteristic HumidityCharacteristic = {
     .callbacks = { .handleRead = HandleHumidityRead, .handleWrite = NULL }
 };
 
+/**
+ * The 'Temperature' characteristic of the WeatherStation service.
+ */
 const HAPUInt8Characteristic AirQualityCharacteristic = {
     .format = kHAPCharacteristicFormat_UInt8,
     .iid = kIID_AirQuality,
@@ -534,20 +519,8 @@ const HAPUInt8Characteristic AirQualityCharacteristic = {
 };
 
 /**
- * The Light Bulb service that contains the 'On' characteristic.
+ * The Temperature service that contains the 'Temperature' characteristic.
  */
-// const HAPService lightBulbService = {
-//     .iid = kIID_LightBulb,
-//     .serviceType = &kHAPServiceType_LightBulb,
-//     .debugDescription = kHAPServiceDebugDescription_LightBulb,
-//     .name = "Light Bulb",
-//     .properties = { .primaryService = true, .hidden = false, .ble = { .supportsConfiguration = false } },
-//     .linkedServices = NULL,
-//     .characteristics = (const HAPCharacteristic* const[]) { &lightBulbServiceSignatureCharacteristic,
-//                                                             &lightBulbNameCharacteristic,
-//                                                             &lightBulbOnCharacteristic,
-//                                                             NULL }
-// };
 const HAPService sensorTemperatureService = {
     .iid = kIID_TemperatureSensor,
     .serviceType = &kHAPServiceType_TemperatureSensor,
@@ -555,12 +528,15 @@ const HAPService sensorTemperatureService = {
     .name = "Temperature",
     .properties = { .primaryService = true, .hidden = false, .ble = { .supportsConfiguration = false } },
     .linkedServices = (uint16_t const[]) { kIID_HumiditySensor, 0 },
-    .characteristics = (const HAPCharacteristic* const[]) { &lightBulbServiceSignatureCharacteristic,
-                                                            &lightBulbNameCharacteristic,
+    .characteristics = (const HAPCharacteristic* const[]) { &WeatherStationServiceSignatureCharacteristic,
+                                                            &WeatherStationNameCharacteristic,
                                                             &TemperatureCharacteristic,
                                                             NULL }
 };
 
+/**
+ * The Humidity service that contains the 'Humidity' characteristic.
+ */
 const HAPService sensorHumidityService = {
     .iid = kIID_HumiditySensor,
     .serviceType = &kHAPServiceType_HumiditySensor,
@@ -568,11 +544,14 @@ const HAPService sensorHumidityService = {
     .name = NULL,
     .properties = { .primaryService = false, .hidden = false, .ble = { .supportsConfiguration = false } },
     .linkedServices = (uint16_t const[]) { kIID_TemperatureSensor, 0 },
-    .characteristics = (const HAPCharacteristic* const[]) { &lightBulbServiceSignatureCharacteristic,
+    .characteristics = (const HAPCharacteristic* const[]) { &WeatherStationServiceSignatureCharacteristic,
                                                             &HumidityCharacteristic,
                                                             NULL }
 };
 
+/**
+ * The AirQuality service that contains the 'AirQuality' characteristic.
+ */
 const HAPService sensorAirQualityService = {
     .iid = kIID_AirQualitySensor,
     .serviceType = &kHAPServiceType_AirQualitySensor,
@@ -580,7 +559,7 @@ const HAPService sensorAirQualityService = {
     .name = NULL,
     .properties = { .primaryService = false, .hidden = false, .ble = { .supportsConfiguration = false } },
     .linkedServices = (uint16_t const[]) { kIID_TemperatureSensor, 0 },
-    .characteristics = (const HAPCharacteristic* const[]) { &lightBulbServiceSignatureCharacteristic,
+    .characteristics = (const HAPCharacteristic* const[]) { &WeatherStationServiceSignatureCharacteristic,
                                                             &AirQualityCharacteristic,
                                                             NULL }
 };

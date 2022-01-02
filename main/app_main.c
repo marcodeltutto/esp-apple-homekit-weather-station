@@ -334,7 +334,8 @@ void main_task()
     AppAccessoryServerStart();
 
     // Add a callback to the event loop.
-    HAPError err = HAPPlatformRunLoopScheduleCallback(updateHAPCurrentState, NULL, 0);
+    HAPError err = HAPPlatformRunLoopScheduleCallback(AppUpdateHAPCurrentState, NULL, 0);
+    HAPAssert(err == kHAPError_None);
 
     // Run main loop until explicitly stopped.
     HAPPlatformRunLoopRun();

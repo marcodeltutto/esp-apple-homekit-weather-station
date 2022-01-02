@@ -98,11 +98,6 @@ u8g2_t u8g2;
  */
 void PrintOnScreen() {
 
-    // float temp = accessoryConfiguration.state.temperature;
-    // float hum = accessoryConfiguration.state.humidity;
-    // uint32_t air_val = accessoryConfiguration.state.airval;
-    // char* air_str = accessoryConfiguration.state.airstr;
-
     u8g2_ClearBuffer(&u8g2);
     u8g2_SetFont(&u8g2, u8g2_font_timR14_tf);
     // u8g2_DrawStr(&u8g2, 80, 20, "00:00");
@@ -130,17 +125,6 @@ void PrintOnScreen() {
     u8g2_DrawStr(&u8g2, 22, 120, str);
     // sprintf(str, "  value: %d", accessoryConfiguration.state.airval);
     // u8g2_DrawStr(&u8g2, 0, 120, str);
-
-
-
-    // u8g2_SetFont(&u8g2, u8g2_font_timR24_tf);
-    // u8g2_DrawStr(&u8g2, 0, 40, "-");
-
-    // // u8g2_DrawStr(&u8g2, 80, 20, "00:00");
-    // u8g2_SetFont(&u8g2, u8g2_font_timR14_tf);
-    // // u8g2_DrawStr(&u8g2, 0, 40, "Temp: -");
-    // u8g2_DrawStr(&u8g2, 0, 70, "Humidity: -");
-    // u8g2_DrawStr(&u8g2, 0, 100, "Air: -");
 
     u8g2_SendBuffer(&u8g2);
 }
@@ -231,24 +215,6 @@ static void LoadAccessoryState(void) {
     }
 }
 
-/**
- * Save the accessory state to persistent memory.
- */
-static void SaveAccessoryState(void) {
-    HAPPrecondition(accessoryConfiguration.keyValueStore);
-
-    HAPError err;
-    err = HAPPlatformKeyValueStoreSet(
-            accessoryConfiguration.keyValueStore,
-            kAppKeyValueStoreDomain_Configuration,
-            kAppKeyValueStoreKey_Configuration_State,
-            &accessoryConfiguration.state,
-            sizeof accessoryConfiguration.state);
-    if (err) {
-        HAPAssert(err == kHAPError_Unknown);
-        HAPFatalError();
-    }
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -258,7 +224,6 @@ static void SaveAccessoryState(void) {
  * Note: Not constant to enable BCT Manual Name Change.
  */
 static HAPAccessory accessory = { .aid = 1,
-                                  // .category = kHAPAccessoryCategory_Lighting,
                                   .category = kHAPAccessoryCategory_Sensors,
                                   .name = "Marco's Sensor",
                                   .manufacturer = "Marco",
@@ -288,31 +253,12 @@ HAPError IdentifyAccessory(
 }
 
 HAP_RESULT_USE_CHECK
-HAPError HandleLightBulbOnRead(
-        HAPAccessoryServerRef* server HAP_UNUSED,
-        const HAPBoolCharacteristicReadRequest* request HAP_UNUSED,
-        bool* value,
-        void* _Nullable context HAP_UNUSED) {
-    *value = accessoryConfiguration.state.lightBulbOn;
-    HAPLogInfo(&kHAPLog_Default, "%s: %s", __func__, *value ? "true" : "false");
-    printf("*********************** reading value: %d \n", *value);
-
-    return kHAPError_None;
-}
-
-HAP_RESULT_USE_CHECK
 HAPError HandleTemperatureRead(
         HAPAccessoryServerRef* server HAP_UNUSED,
         const HAPFloatCharacteristicReadRequest* request HAP_UNUSED,
         float* value,
         void* _Nullable context HAP_UNUSED) {
 
-    // esp_err_t err = dht_read_float_data(sensor_type, dht_gpio, &accessoryConfiguration.state.humidity, &accessoryConfiguration.state.temperature);
-    // if (err == ESP_OK) {
-    //     ESP_LOGI(TAG, "HandleTemperatureRead - Humidity: %.1f%% Temp: %.1f\n", accessoryConfiguration.state.humidity, accessoryConfiguration.state.temperature);
-    // } else {
-    //     ESP_LOGW(TAG, "HandleTemperatureRead - Could not read data from sensor\n");
-    // }
     readDHT();
     *value = accessoryConfiguration.state.temperature;
     ESP_LOGI(TAG, "HandleTemperatureRead - Humidity: %.1f%% Temp: %.1f\n", accessoryConfiguration.state.humidity, accessoryConfiguration.state.temperature);
@@ -329,12 +275,7 @@ HAPError HandleHumidityRead(
         const HAPFloatCharacteristicReadRequest* request HAP_UNUSED,
         float* value,
         void* _Nullable context HAP_UNUSED) {
-    // esp_err_t err = dht_read_float_data(sensor_type, dht_gpio, &accessoryConfiguration.state.humidity, &accessoryConfiguration.state.temperature);
-    // if (err == ESP_OK) {
-    //     ESP_LOGI(TAG, "HandleHumidityRead - Humidity: %.1f%% Temp: %.1f\n", accessoryConfiguration.state.humidity, accessoryConfiguration.state.temperature);
-    // } else {
-    //     ESP_LOGW(TAG, "HandleHumidityRead - Could not read data from sensor\n");
-    // }
+
     readDHT();
     *value = accessoryConfiguration.state.humidity;
     ESP_LOGI(TAG, "HandleHumidityRead - Humidity: %.1f%% Temp: %.1f\n", accessoryConfiguration.state.humidity, accessoryConfiguration.state.temperature);
@@ -361,45 +302,6 @@ HAPError HandleAirQualityRead(
     // int air_quality = gpio_get_level(36);
 
     PrintOnScreen();
-
-    return kHAPError_None;
-}
-
-
-
-HAP_RESULT_USE_CHECK
-HAPError HandleLightBulbOnWrite(
-        HAPAccessoryServerRef* server,
-        const HAPBoolCharacteristicWriteRequest* request,
-        bool value,
-        void* _Nullable context HAP_UNUSED) {
-    HAPLogInfo(&kHAPLog_Default, "%s: %s", __func__, value ? "true" : "false");
-    if (accessoryConfiguration.state.lightBulbOn != value) {
-        accessoryConfiguration.state.lightBulbOn = value;
-
-        printf("*********************** write value: %d \n", value);
-        gpio_set_level(4, value);
-
-
-
-        int air_quality = gpio_get_level(36);
-        printf("********************************** air quality: %i \n", air_quality);
-
-
-        // uint32_t reading =  adc1_get_raw(ADC1_CHANNEL_0);
-
-        // esp_adc_cal_characteristics_t *adc_chars = calloc(1, sizeof(esp_adc_cal_characteristics_t));
-        // esp_adc_cal_characterize(ADC_UNIT_1, ADC_EXAMPLE_ATTEN, ADC_WIDTH_BIT_DEFAULT, 0, &adc1_chars);
-
-
-        // uint32_t voltage = esp_adc_cal_raw_to_voltage(reading, adc_chars);
-        // printf("*********************** temp reading: %i \n", reading);
-        // printf("*********************** temp reading, mV: %i \n", voltage);
-
-        SaveAccessoryState();
-
-        HAPAccessoryServerRaiseEvent(server, request->characteristic, request->service, request->accessory);
-    }
 
     return kHAPError_None;
 }
@@ -464,7 +366,7 @@ const HAPAccessory* AppGetAccessoryInfo() {
 
 TickType_t xLastWakeTime;
 
-void updateHAPCurrentState(void* _Nullable context, size_t contextSize)
+void AppUpdateHAPCurrentState(void* _Nullable context, size_t contextSize)
 {
     // Add delay, fixes https://github.com/espressif/arduino-esp32/issues/3871#issuecomment-913186206
     const TickType_t xDelay = 100 / portTICK_PERIOD_MS;
@@ -472,16 +374,17 @@ void updateHAPCurrentState(void* _Nullable context, size_t contextSize)
 
     int time_diff = (xTaskGetTickCount() - xLastWakeTime) * portTICK_PERIOD_MS;
     if (time_diff > 10000) { // 30 seconds
-        ESP_LOGI(TAG, "updateHAPCurrentState - emitting trigger");
+        ESP_LOGI(TAG, "AppUpdateHAPCurrentState - emitting trigger");
         HAPAccessoryServerRaiseEvent(accessoryConfiguration.server, &AirQualityCharacteristic, &sensorAirQualityService, AppGetAccessoryInfo());
         HAPAccessoryServerRaiseEvent(accessoryConfiguration.server, &TemperatureCharacteristic, &sensorTemperatureService, AppGetAccessoryInfo());
         // HAPAccessoryServerRaiseEvent(accessoryConfiguration.server, &HumidityCharacteristic, &sensorHumidityService, AppGetAccessoryInfo());
         xLastWakeTime = xTaskGetTickCount();
-        ESP_LOGI(TAG, "updateHAPCurrentState - Humidity: %.1f%% Temp: %.1f\n", accessoryConfiguration.state.humidity, accessoryConfiguration.state.temperature);
+        ESP_LOGI(TAG, "AppUpdateHAPCurrentState - Humidity: %.1f%% Temp: %.1f\n", accessoryConfiguration.state.humidity, accessoryConfiguration.state.temperature);
     }
 
     // Re-add the callback to the event loop.
-    HAPError err = HAPPlatformRunLoopScheduleCallback(updateHAPCurrentState, NULL, 0);
+    HAPError err = HAPPlatformRunLoopScheduleCallback(AppUpdateHAPCurrentState, NULL, 0);
+    HAPAssert(err == kHAPError_None);
 }
 
 

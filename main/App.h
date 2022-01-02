@@ -35,16 +35,6 @@ HAPError IdentifyAccessory(
 /**
  * Handle read request to the 'On' characteristic of the Light Bulb service.
  */
-// HAP_RESULT_USE_CHECK
-// HAPError HandleLightBulbOnRead(
-//         HAPAccessoryServerRef* server,
-//         const HAPBoolCharacteristicReadRequest* request,
-//         bool* value,
-//         void* _Nullable context);
-
-/**
- * Handle read request to the 'On' characteristic of the Light Bulb service.
- */
 HAP_RESULT_USE_CHECK
 HAPError HandleTemperatureRead(
         HAPAccessoryServerRef* server,
@@ -70,16 +60,6 @@ HAPError HandleAirQualityRead(
         HAPAccessoryServerRef* server,
         const HAPUInt8CharacteristicReadRequest* request,
         uint8_t* value,
-        void* _Nullable context);
-
-/**
- * Handle write request to the 'On' characteristic of the Light Bulb service.
- */
-HAP_RESULT_USE_CHECK
-HAPError HandleLightBulbOnWrite(
-        HAPAccessoryServerRef* server,
-        const HAPBoolCharacteristicWriteRequest* request,
-        bool value,
         void* _Nullable context);
 
 /**
@@ -122,7 +102,7 @@ const HAPAccessory* AppGetAccessoryInfo();
 /**
  * Callback
  */
-void updateHAPCurrentState(void* _Nullable context, size_t contextSize);
+void AppUpdateHAPCurrentState(void* _Nullable context, size_t contextSize);
 
 
 #if __has_feature(nullability)
