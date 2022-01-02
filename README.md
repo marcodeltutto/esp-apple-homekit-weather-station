@@ -28,4 +28,4 @@ Open the Home app on your iPhone/iPad and follow these steps:
 
 ![QR Code](https://user-images.githubusercontent.com/17006198/147892343-719ffbee-4af7-4b9b-883a-367017ca3631.png)
 
-Additional documentation is in the Follow instructions [esp-apple-homekit-adk](https://github.com/espressif/esp-apple-homekit-adk/tree/1371579deea70bf6f1b39a470cad1668f5c9400c) to setup the ESP-IDF environment. Then: repo.
+Additional documentation is in the [esp-apple-homekit-adk](https://github.com/espressif/esp-apple-homekit-adk/tree/1371579deea70bf6f1b39a470cad1668f5c9400c) repo.
