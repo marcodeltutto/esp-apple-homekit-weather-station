@@ -1,6 +1,6 @@
 # Weather Station for ESP32 compatible with Apple HomeKit
 
-Follow instructions (here)[https://github.com/espressif/esp-apple-homekit-adk/tree/1371579deea70bf6f1b39a470cad1668f5c9400c] to setup the ESP-IDF environment. Then:
+Follow instructions [here](https://github.com/espressif/esp-apple-homekit-adk/tree/1371579deea70bf6f1b39a470cad1668f5c9400c) to setup the ESP-IDF environment. Then:
 
 ```bash
 git clone --recursive https://github.com/marcodeltutto/esp-apple-homekit-weather-station.git
