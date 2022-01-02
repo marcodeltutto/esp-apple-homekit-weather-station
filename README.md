@@ -17,3 +17,5 @@ Open the Home app on your iPhone/iPad and follow these steps:
 - Click on "Add Accessory".
 - Scan the QR code below.
 - Enter 11122333 as the Setup code.
+
+![QR Code](https://user-images.githubusercontent.com/17006198/147892343-719ffbee-4af7-4b9b-883a-367017ca3631.png)
