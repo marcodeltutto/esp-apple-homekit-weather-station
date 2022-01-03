@@ -469,7 +469,7 @@ const HAPFloatCharacteristic TemperatureCharacteristic = {
 };
 
 /**
- * The 'Temperature' characteristic of the WeatherStation service.
+ * The 'Humidity' characteristic of the WeatherStation service.
  */
 const HAPFloatCharacteristic HumidityCharacteristic = {
     .format = kHAPCharacteristicFormat_Float,
@@ -494,7 +494,7 @@ const HAPFloatCharacteristic HumidityCharacteristic = {
 };
 
 /**
- * The 'Temperature' characteristic of the WeatherStation service.
+ * The 'AirQuality' characteristic of the WeatherStation service.
  */
 const HAPUInt8Characteristic AirQualityCharacteristic = {
     .format = kHAPCharacteristicFormat_UInt8,

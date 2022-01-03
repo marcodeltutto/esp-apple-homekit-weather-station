@@ -15,6 +15,7 @@ git clone --recursive https://github.com/marcodeltutto/esp-apple-homekit-weather
 cd esp-apple-homekit-weather-station
 export ESPPORT=/dev/tty.SLAB_USBtoUART #Set your board's serial port here
 idf.py set-target esp32
+idf.py menuconfig # Set Example Configuration -> WiFi SSID/Password
 idf.py flash
 esptool.py -p $ESPPORT write_flash 0x340000 accessory_setup.bin
 idf.py monitor
