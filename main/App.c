@@ -25,17 +25,17 @@
 //
 //   6. Callbacks that notify the server in case their associated value has changed.
 
+#include <stdio.h>
+#include <string.h>
+
 #include "HAP.h"
 
 #include "App.h"
 #include "DB.h"
-#include <stdio.h>
-#include <string.h>
+
 #include "driver/gpio.h"
 #include "driver/adc.h"
 #include "esp_adc_cal.h"
-// #include <Adafruit_DPS310.h>
-
 #include "esp_log.h"
 static const char *TAG = "app";
 
@@ -81,10 +81,6 @@ typedef struct {
 } AccessoryConfiguration;
 
 static AccessoryConfiguration accessoryConfiguration;
-
-
-// HAPService* current_service;
-// HAPCharacteristic* current_characteristic;
 
 
 /**
@@ -157,6 +153,9 @@ void CalcAirQuality() {
 
 TickType_t xLastDHTread;
 
+/**
+ * Read temperature and humidity from DHT sensor
+ */
 void readDHT() {
     // Don't read the DHT sensor in less than 0.5 seconds
     int time_diff = (xTaskGetTickCount() - xLastDHTread) * portTICK_PERIOD_MS;
@@ -219,7 +218,7 @@ static void LoadAccessoryState(void) {
 //----------------------------------------------------------------------------------------------------------------------
 
 /**
- * HomeKit accessory that provides the Light Bulb service.
+ * HomeKit accessory that provides the WeatherStation service.
  *
  * Note: Not constant to enable BCT Manual Name Change.
  */
@@ -234,7 +233,6 @@ static HAPAccessory accessory = { .aid = 1,
                                   .services = (const HAPService* const[]) { &accessoryInformationService,
                                                                             &hapProtocolInformationService,
                                                                             &pairingService,
-                                                                            // &lightBulbService,
                                                                             &sensorHumidityService,
                                                                             &sensorTemperatureService,
                                                                             &sensorAirQualityService,
@@ -398,6 +396,10 @@ void AppInitialize(
 
     strcpy(accessoryConfiguration.state.airstr, "Null");
 
+    //
+    // Set appropriate gpio pins
+    //
+
     gpio_pad_select_gpio(4);
     gpio_set_direction(4, GPIO_MODE_OUTPUT);
 
@@ -407,6 +409,10 @@ void AppInitialize(
     adc1_config_width(ADC_WIDTH_BIT_12);
     adc1_config_channel_atten(ADC1_CHANNEL_0, ADC_ATTEN_DB_11);
 
+
+    //
+    // Start the display
+    //
 
     u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
     u8g2_esp32_hal.sda = GPIO_OLED_SDA;
@@ -421,8 +427,6 @@ void AppInitialize(
     // u8g2_Setup_ssd1306_i2c_128x32_univision_f(&u8g2, U8G2_R0, u8g2_esp32_i2c_byte_cb, u8g2_esp32_gpio_and_delay_cb);
     // u8g2_Setup_sh1107_i2c_seeed_96x96_f(&u8g2, U8G2_R0, u8g2_esp32_i2c_byte_cb, u8g2_esp32_gpio_and_delay_cb);
     u8g2_Setup_sh1107_i2c_seeed_128x128_f(&u8g2, U8G2_R0, u8g2_esp32_i2c_byte_cb, u8g2_esp32_gpio_and_delay_cb);
-
-
 
     u8x8_SetI2CAddress(&u8g2.u8x8, 0x3C);
     u8g2_InitDisplay(&u8g2);
