@@ -1,5 +1,5 @@
 [submodule "esp-apple-homekit-adk"]
-	path = esp-apple-homekit-adk
+	path = components/esp-apple-homekit-adk
 	url = https://github.com/espressif/esp-apple-homekit-adk.git
 [submodule "components/u8g2"]
 	path = components/u8g2
